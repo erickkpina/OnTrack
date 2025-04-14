@@ -1,48 +1,45 @@
 package com.epf1.ontrack
 
 import android.os.Bundle
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
-import com.epf1.ontrack.databinding.ActivityMainBinding
-import com.epf1.ontrack.responses.DriverResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.epf1.ontrack.navigation.Screen
+import com.epf1.ontrack.ui.components.BottomNavBar
+import com.epf1.ontrack.ui.screens.DriverListScreen
+import com.epf1.ontrack.viewmodel.MainViewModel
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-
+class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContent {
+            val navController = rememberNavController()
+            val viewModel: MainViewModel = viewModel()
+            /*DriverListScreen(viewModel = viewModel)*/
 
-        getDrivers()
-    }
-
-    private fun getDrivers() {
-        RetrofitInstance.api.getDrivers(limit = 10, offset = 20)
-            .enqueue(object : Callback<DriverResponse> {
-                override fun onResponse(call: Call<DriverResponse>, response: Response<DriverResponse>) {
-                    if (response.isSuccessful) {
-                        val drivers = response.body()?.drivers
-                        var temp = ""
-                        if (drivers != null) {
-                            for (d in drivers) {
-                                temp += "Driver: ${d.name} ${d.surname} - ${d.nationality}\n"
-                            }
-                            binding.drivers.text = temp
-                        } else {
-                            println("drivers == null")
-                        }
-                    } else {
-                        println("Erro na resposta: ${response.code()}")
+            Scaffold(bottomBar = { BottomNavBar(navController) }) { innerPadding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Drivers.route,
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    composable(Screen.Drivers.route) {
+                        DriverListScreen(viewModel = viewModel)
+                    }
+                    composable(Screen.Teams.route) {
+                        //TODO
+                    }
+                    composable(Screen.Races.route) {
+                        //TODO
                     }
                 }
-
-                override fun onFailure(call: Call<DriverResponse>, t: Throwable) {
-                    println("Erro na requisição: ${t.message}")
-                }
-            })
+            }
+        }
     }
 }
