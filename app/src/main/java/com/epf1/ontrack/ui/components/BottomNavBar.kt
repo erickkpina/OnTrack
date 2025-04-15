@@ -9,7 +9,7 @@ import com.epf1.ontrack.navigation.Screen
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Star
 
 data class BottomNavItem(val screen: Screen, val icon: ImageVector)
 
@@ -17,7 +17,7 @@ data class BottomNavItem(val screen: Screen, val icon: ImageVector)
 fun BottomNavBar(navController: NavController) {
     val items = listOf(
         BottomNavItem(Screen.Drivers, Icons.Filled.Person),
-        BottomNavItem(Screen.Teams, Icons.Filled.Place),
+        BottomNavItem(Screen.DriversStandings, Icons.Filled.Star),
         BottomNavItem(Screen.Races, Icons.Filled.ShoppingCart)
     )
 
