@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.epf1.ontrack.MainActivity
 import com.epf1.ontrack.ui.components.LoadingDialog
 import com.epf1.ontrack.viewmodel.MainViewModel
 
@@ -21,7 +22,7 @@ fun DriverListScreen(viewModel: MainViewModel) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("F1 Drivers") })
+            TopAppBar(title = { Text("F1 Drivers", color = MainActivity.TITLE_IN_DARK_BG) }, backgroundColor = MainActivity.TOP_BAR_COLOR)
         }
     ) { padding ->
         LazyColumn(
@@ -32,10 +33,10 @@ fun DriverListScreen(viewModel: MainViewModel) {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)) {
-                    Text(text = "${driver.name} ${driver.surname}", style = MaterialTheme.typography.h6)
-                    Text(text = "Nationality: ${driver.nationality}")
+                    Text(text = "${driver.name} ${driver.surname}", style = MaterialTheme.typography.h6, color = MainActivity.TITLE_COLOR)
+                    Text(text = "Nationality: ${driver.nationality}", color = MainActivity.DESCRIPTION_COLOR)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Divider()
+                    Divider(color = MainActivity.DIVIDER_COLOR)
                 }
             }
         }

@@ -1,9 +1,9 @@
 package com.epf1.ontrack.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,19 +16,30 @@ import java.time.LocalDateTime
 
 @Composable
 fun YearPickerDialog(
-    currentYear: Int = LocalDateTime.now().year,
-    startYear: Int = 1950,
+    selectedYear: Int,
     onYearSelected: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val years = (startYear..currentYear).toList().reversed()
-    var selectedYear by remember { mutableStateOf(currentYear) }
+    val currentYear = LocalDateTime.now().year
+    val years = (1950..currentYear).toList().reversed()
+    val initialIndex = years.indexOf(selectedYear)
+
+    var tempSelectedYear by remember { mutableStateOf(selectedYear) }
+    val listState = rememberLazyListState()
+
+    // Scroll to the selected year when dialog opens
+    LaunchedEffect(Unit) {
+        if (initialIndex != -1) {
+            listState.scrollToItem(initialIndex)
+        }
+    }
 
     AlertDialog(
-        modifier = Modifier
-            .height(400.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
         onDismissRequest = onDismiss,
+        shape = MaterialTheme.shapes.medium,
+        containerColor = Color(0xFF2C2C2C),
+        titleContentColor = Color.White,
+        textContentColor = Color.White,
         title = {
             Text(
                 "Select a Year",
@@ -38,6 +49,7 @@ fun YearPickerDialog(
         },
         text = {
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .height(250.dp)
                     .fillMaxWidth(),
@@ -45,12 +57,12 @@ fun YearPickerDialog(
             ) {
                 items(years) { year ->
                     TextButton(onClick = {
-                        selectedYear = year
+                        tempSelectedYear = year
                     }) {
                         Text(
                             text = year.toString(),
                             fontSize = 18.sp,
-                            color = if (year == selectedYear) Color.Red else Color.White,
+                            color = if (year == tempSelectedYear) Color.Red else Color.White,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -59,23 +71,16 @@ fun YearPickerDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                onYearSelected(selectedYear)
+                onYearSelected(tempSelectedYear)
                 onDismiss()
             }) {
-                Text(
-                    "Confirm",
-                    color = Color.Red,
-                    fontSize = 18.sp
-                )
+                Text("Confirm", color = Color.Red, fontSize = 18.sp)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("Cancel", color = Color.LightGray)
             }
-        },
-        containerColor = Color(0xFF2C2C2C), // Dark gray background
-        titleContentColor = Color.White,
-        textContentColor = Color.White
+        }
     )
 }
