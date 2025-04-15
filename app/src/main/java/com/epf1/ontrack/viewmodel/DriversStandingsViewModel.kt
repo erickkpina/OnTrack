@@ -14,19 +14,25 @@ class DriversStandingsViewModel : ViewModel() {
     private val _standings = MutableStateFlow<List<DriversChampionship>>(emptyList())
     val standings: StateFlow<List<DriversChampionship>> = _standings
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     init {
         fetchDriversStandings()
     }
 
     private fun fetchDriversStandings() {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
-                val response = RetrofitInstance.api.getDriversStandings(limit = 22, offset = 0)
+                val response = RetrofitInstance.api.getDriversStandings(limit = 100, offset = 0)
                 _standings.value = response.drivers_championship
             } catch (e: IOException) {
                 println("Erro de IO: ${e.message}")
             } catch (e: HttpException) {
                 println("Erro HTTP: ${e.message}")
+            }finally {
+                _isLoading.value = false
             }
         }
     }
